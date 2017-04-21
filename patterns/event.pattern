@@ -1,0 +1,53 @@
+US:%x[0,5] # token
+BS:%x[0,5] # B token
+
+UL:%x[0,6] # lemma
+BL:%x[0,6] # lemma
+
+US/S1: %x[0,5] / %x[1,5] # forward token bigram
+US/S-1: %x[0,5] / %x[-1,5] # backward token bigram
+BS/S1: %x[0,5] / %x[1,5] # forward token bigram
+BS/S-1: %x[0,5] / %x[-1,5] # backward token bigram
+
+US/S1/S2: %x[0,1] / %x[1,5] / %x[2,5] # forward token trigram
+US/S-1/S-2: %x[0,5] / %x[-1,5] / %x[-2,5] # backward token trigram
+BS/S1/S2: %x[0,1] / %x[1,5] / %x[2,5] # forward token trigram
+BS/S-1/S-2: %x[0,5] / %x[-1,5] / %x[-2,5] # backward token trigram
+
+UT:%x[0,7] # pos-tag
+BT:%x[0,7] # B pos-tag
+
+UFDP:%x[0,11] # first-order dependency pos
+USDP:%x[0,12] # second-order dependency pos
+BFDP:%x[0,11] # first-order dependency pos
+BSDP:%x[0,12] # second-order dependency pos
+
+UT/T1:%x[0,7] / %x[1,7] # forward tag bigram
+UT/T-1:%x[0,7] / %x[-1,7] # backward tag bigram
+BT/T1:%x[0,7] / %x[1,7] # forward tag bigram
+BT/T-1:%x[0,7] / %x[-1,7] # backward tag bigram
+
+UT/T1/T2:%x[0,7] / %x[1,7] / %x[2,7] # forward pos-tag trigram
+UT/T-1/T-2:%x[0,7] / %x[-1,7] / %x[-2,7] # backward pos-tag trigram
+BT/T1/T2:%x[0,7] / %x[1,7] / %x[2,7] # forward pos-tag trigram
+BT/T-1/T-2:%x[0,7] / %x[-1,7] / %x[-2,7] # backward pos-tag trigram
+
+US/T: %x[0,5] / %x[0,7] # pos-tag disambiguated token
+US/T/T-1 :  %x[0,5] / %x[0,7] / %x[1,7] # lexicalized forward word+tag collocation
+US/T/T-1 :  %x[0,5] / %x[0,7] / %x[-1,7] # lexicalized backward word+tag collocation
+BS/T: %x[0,5] / %x[0,7] # pos-tag disambiguated token
+BS/T/T-1 :  %x[0,5] / %x[0,7] / %x[1,7] # lexicalized forward word+tag collocation
+BS/T/T-1 :  %x[0,5] / %x[0,7] / %x[-1,7] # lexicalized backward word+tag collocation
+
+UD:%x[0,10] # dependency relation
+BD:%x[0,10] # B dependency relation
+
+US/D:%x[0,5] / %x[0,10] # lexicalized dependency
+UT/D:%x[0,7] / %x[0,10] # tagged dependency
+
+URTD:%x[0,13] # right token distance
+ULTD:%x[0,14] # left token distance
+UDD:%x[0,15]  # dependency distance
+UDPATH:%x[0,16] # dependency path
+BDPATH:%x[0,16] # B dependency path
+UL/DPATH:%x[0,6]/%x[0,16] # lemmatized dependency path
