@@ -1,7 +1,10 @@
 # sherlock
 
-Train and test a system for negation scope resolution. It requires a working installation of [Wapiti](https://wapiti.limsi.fr/)
-This system was initially submitted to [2012 *sem shared task on negation scope resolution](http://ixa2.si.ehu.es/starsem), ranking second in the closed track and first in the open track.
+Train and test a system for negation scope resolution. This system was initially submitted to [2012 *sem shared task on negation scope resolution](http://ixa2.si.ehu.es/starsem), ranking second in the closed track and first in the open track.
+
+
+## Requirements
+Sherlock requires python 2.7 and up, and a working installation of [Wapiti](https://wapiti.limsi.fr/).
 
 ## Usage
 
