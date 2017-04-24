@@ -45,7 +45,7 @@ After cloning this repository and installing Wapiti, the following command will 
 python sherlock.py --training data/training/corenlp.\*sem+ --testing data/development/corenlp.\*sem+ --wapiti ../Wapiti/wapiti --pattern_scope patterns/toy.pattern --pattern_event patterns/toy.pattern --output foo.sem --cleanup
 ```
 
-Sherlock will output a file that is compatible with the shared task evaluation script. Note however that the script assumes gold data in the original format; you can obtain bot script and data [here](http://www.clips.ua.ac.be/sem2012-st-neg/data.html)
+Sherlock will output a file that is compatible with the shared task evaluation script. Note however that the script assumes gold data in the original format; you can obtain both script and data [here](http://www.clips.ua.ac.be/sem2012-st-neg/data.html).
 
 ## Data
 Sherlock assumes that the test set comes with pre-classified negation cues. The input format itself is not finalized yet. Currently it uses an extended version of the original 2012 *sem shared task (see examples in `sherlock/data`).
