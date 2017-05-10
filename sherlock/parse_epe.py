@@ -45,7 +45,6 @@ def parse_and_dump(infile, outfile, pos, lemma, mode):
                     for edge in node['edges']:
                         tokens[edge['target']]['heads'].append(str(node['id']))
                         tokens[edge['target']]['deprels'].append(edge['label'])
-    
         for i in sorted(tokens):
             if cues:
                 sem_neg = ['_' for x in range(len(cues)*3)]
@@ -58,25 +57,27 @@ def parse_and_dump(infile, outfile, pos, lemma, mode):
                         sem_neg[cues.index(negation['id'])*3+2] = negation['event']
             else:
                 sem_neg = ['***']
-            out.write(u"{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format('_',
-                                                                         epe_sentence['id'],
-                                                                         i, 
-                                                                         tokens[i]['form'],
-                                                                         tokens[i]['lemma'],
-                                                                         tokens[i]['pos'],
-                                                                         ','.join(tokens[i]['heads']) if tokens[i]['heads'] else '0', 
-                                                                         ','.join(tokens[i]['deprels']) if tokens[i]['deprels'] else 'root',
-                                                                         '_',
-                                                                         '\t'.join(sem_neg)))
+            s = u"{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n"
+            out.write(s.format('_',
+                               epe_sentence['id'],
+                               i, 
+                               tokens[i]['form'],
+                               tokens[i]['lemma'],
+                               tokens[i]['pos'],
+                               ','.join(tokens[i]['heads']) if tokens[i]['heads'] else '0', 
+                               ','.join(tokens[i]['deprels']) if tokens[i]['deprels'] else 'root',
+                               '_',
+                               '\t'.join(sem_neg)))
             if mode == 'test':
-                eval_out.write(u"{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format('_',
-                                                                          epe_sentence['id'],
-                                                                          i, 
-                                                                          tokens[i]['form'],
-                                                                          tokens[i]['lemma'],
-                                                                          tokens[i]['pos'],
-                                                                          '_',
-                                                                          '\t'.join(sem_neg)))
+                s = u"{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n"
+                eval_out.write(s.format('_',
+                                        epe_sentence['id'],
+                                        i, 
+                                        tokens[i]['form'],
+                                        tokens[i]['lemma'],
+                                        tokens[i]['pos'],
+                                        '_',
+                                        '\t'.join(sem_neg)))
         if mode == 'test':
             eval_out.write('\n')
         out.write('\n')
