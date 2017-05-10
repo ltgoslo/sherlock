@@ -5,10 +5,11 @@ import codecs
 def make_tokens(epe_sentence, pos, lemma):
     tokens = {}
     for node in epe_sentence['nodes']:
-        # gulash hack
+        # hungarian hack
         if 'properties' in node:
-        # print(epe_sentence['id'])
-        # print('NODE:', node)
+            # for now, call the formfeed character "formfeed"
+            # currently there's a lot of .strip()s down in the
+            # pipeline so we need some actual characters
             if node['form'] == u'\x0c':
                 node['form'] = u'formfeed'
                 node['properties'][lemma] = u'formfeed'
@@ -32,7 +33,7 @@ def parse_and_dump(infile, outfile, pos, lemma, mode):
         tokens = make_tokens(epe_sentence, pos, lemma)
         cues = []
         for node in epe_sentence['nodes']:
-            # gulkash hack
+            # hungarian hack
             if 'properties' in node:
                 if 'negation' in node:
                     for negation in node['negation']:
