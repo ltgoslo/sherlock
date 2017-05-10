@@ -11,6 +11,7 @@ from sherlock.config import *
 from sherlock.flatten import flatten_scopes
 from sherlock.features import *
 from sherlock.reconstruct import reconstruct
+from sherlock.parse_epe import parse_and_dump
 
 def wapiti(wapiti, pattern_or_model, data, mode):
     if mode == 'train':
@@ -27,12 +28,11 @@ def wapiti(wapiti, pattern_or_model, data, mode):
         sys.exit(1)
     return output 
 
-def transform(dataset, mode):
-    bn = dataset
-
-    # TODO here is where we plug the epe file reading
-
-    dataset = flatten_scopes(dataset)
+def transform(dataset, mode, pos, lemma):
+    bn = dataset.split('/')[-1]
+    converted_epe = '{}_{}.sherlock'.format(bn.split('.')[0], mode)
+    parse_and_dump(dataset, converted_epe, pos, lemma, mode)
+    dataset = flatten_scopes(converted_epe)
     dataset = negation_features(dataset)
     scope = bn + '.{}.scope.wap'.format(mode)
     event = bn + '.{}.event.wap'.format(mode)
@@ -55,13 +55,16 @@ def transform(dataset, mode):
         e.write('\n')        
     s.close()
     e.close()
-    return scope, event
+    return scope, event, converted_epe
 
 if __name__ == '__main__':
     argparser = ArgumentParser(description="Negation scope resolution.")
-    # argparser.add_argument('--pos', help="specify the epe node property to use as pos. Defaults to 'pos'",
-    #                        required=False,
-    #                        default='pos')
+    argparser.add_argument('--pos', help="specify the epe node property to use as pos. Defaults to 'pos'",
+                           required=False,
+                           default='pos')
+    argparser.add_argument('--lemma', help="specify the epe node property to use as pos. Defaults to 'lemma'",
+                           required=False,
+                           default='lemma')
     argparser.add_argument('--training', help="path to training data", required=False)
     argparser.add_argument('--pattern_scope', help="path to a wapiti pattern for negation scopes",
                            required=True)
@@ -77,14 +80,14 @@ if __name__ == '__main__':
 
     if args.training:
         print("Transforming {}...".format(args.training))
-        training_scope, training_event = transform(args.training, 'train')
+        training_scope, training_event, converted_training = transform(args.training, 'train', args.pos, args.lemma)
         print("Training scope model...")
         scope_model = wapiti(args.wapiti, args.pattern_scope, training_scope, 'train')
         print("Training event model...")
         event_model = wapiti(args.wapiti, args.pattern_event, training_event, 'train')
     print("Classifying test set...")
     print("Transforming {}...".format(args.testing))
-    testing_scope, testing_event = transform(args.testing, 'test')
+    testing_scope, testing_event, converted_testing = transform(args.testing, 'test', args.pos, args.lemma)
     if args.scope_model:
         scope_model = args.scope_model
     if args.event_model:
@@ -92,7 +95,7 @@ if __name__ == '__main__':
     labeled_scope = wapiti(args.wapiti, scope_model, testing_scope, 'label')
     labeled_event = wapiti(args.wapiti, event_model, testing_event, 'label')
     print("Reconstructing overlapping scopes...")
-    restored = reconstruct(labeled_scope, labeled_event, args.testing)
+    restored = reconstruct(labeled_scope, labeled_event, converted_testing)
     print("Saving output to {}".format(args.output))
     with open(args.output, 'w') as f:
         for sentence in restored:
@@ -109,14 +112,16 @@ if __name__ == '__main__':
                 #f.write('\t'.join(token) + '\n')
             f.write('\n')
     if args.cleanup:
-        print("cleaning up:\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}".format(training_scope,
-                                                                    training_event,
-                                                                    testing_scope,
-                                                                    testing_event,
-                                                                    scope_model,
-                                                                    event_model,
-                                                                    labeled_scope,
-                                                                    labeled_event))
+        print("cleaning up:\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}\n{}".format(training_scope,
+                                                                            training_event,
+                                                                            testing_scope,
+                                                                            testing_event,
+                                                                            scope_model,
+                                                                            event_model,
+                                                                            labeled_scope,
+                                                                            labeled_event,
+                                                                            converted_training,
+                                                                            converted_testing))
         os.remove(training_scope)
         os.remove(training_event)
         os.remove(testing_scope)
@@ -125,4 +130,6 @@ if __name__ == '__main__':
         os.remove(event_model)
         os.remove(labeled_scope)
         os.remove(labeled_event)
+        os.remove(converted_training)
+        os.remove(converted_testing)
     print("Done!")

@@ -1,8 +1,8 @@
 US:%x[0,3] # token
 BS:%x[0,3] # B token
 
-UL:%x[0,4] # lemma
-BL:%x[0,4] # lemma
+# UL:%x[0,4] # lemma
+# BL:%x[0,4] # lemma
 
 US/S1: %x[0,3] / %x[1,3] # forward token bigram
 US/S-1: %x[0,3] / %x[-1,3] # backward token bigram
@@ -50,5 +50,5 @@ ULTD:%x[0,12] # left token distance
 UDD:%x[0,13]  # dependency distance
 UDPATH:%x[0,14] # dependency path
 BDPATH:%x[0,14] # B dependency path
-UL/DPATH:%x[0,4]/%x[0,14] # lemmatized dependency path
+# UL/DPATH:%x[0,4]/%x[0,14] # lemmatized dependency path
 

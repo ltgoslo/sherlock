@@ -9,13 +9,13 @@ token-level features
 """
 SENTENCE = 1
 INDEX    = 2
-TOKEN    = 5
-LEMMA    = 6
-POS      = 7
-HEAD     = 9
-DEPREL   = 10
+TOKEN    = 3
+LEMMA    = 4
+POS      = 5
+HEAD     = 6
+DEPREL   = 7
 # this is the column where negation annotations _start_
-NEGATION = 11
+NEGATION = 9
 
 """
 This is the label set used by the CRF. One could experiment with less
@@ -51,7 +51,7 @@ does a lot of normalization and you are losing cues at evaluation time,
 you might want to do some tweaking here.
 """
 prefix_negations = r'un|im|in|ir|dis'
-suffix_negations = r"less|n't|n’t"
+suffix_negations = r"less|n't|n’t|not"
 scue_regex = r'^(?P<neg1>' + prefix_negations + r')(?P<word1>.*)$|^(?P<word2>.*?)(?P<neg2>' + suffix_negations + r').*$'
 scue_regex = re.compile(scue_regex)
 

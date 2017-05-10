@@ -39,21 +39,22 @@ def get_data_structs(sentence):
         if token[NEGATION] in [CUE, SUBSTR_CUE]:
             cue_nodes.append(token[INDEX])
         u = token[INDEX] + '_' + token[TOKEN]
-        # TÒDO: Here we should make sure we iterate over a
-        #       (possible) list of heads and deprels
+        vs = []
         if token[HEAD] != '0':
-            h_token = int(token[HEAD])-1
-            v = sentence[h_token][INDEX] + '_' + sentence[h_token][TOKEN]
+            for i, x in enumerate(token[HEAD].split(',')):
+                h_token = int(x)-1
+                vs.append((sentence[h_token][INDEX] + '_' + sentence[h_token][TOKEN], i))
         else:
-            v = '0_root'
+            vs.append(('0_root', 0))
         if u not in graph:
             graph[u] = {}
-        if v not in graph:
-            graph[v] = {}
-        graph[u][v] = 1
-        graph[v][u] = 1
-        edge_names[u+v] = 'UP' + token[DEPREL]
-        edge_names[v+u] = 'DOWN' + token[DEPREL]
+        for v, i in vs:
+            if v not in graph:
+                graph[v] = {}
+            graph[u][v] = 1
+            graph[v][u] = 1
+            edge_names[u+v] = 'UP' + token[DEPREL].split(',')[i]
+            edge_names[v+u] = 'DOWN' + token[DEPREL].split(',')[i]
     if cue_nodes:
         for token in sentence:
             best_dist = maxsize
@@ -68,12 +69,15 @@ def get_data_structs(sentence):
                     token_cues[token[INDEX]] = cue
     return (token_cues, graph, edge_names)
 
+# Here we just pick the first head and deprel from the list
 def dep_pos(index, sentence):
+    index = sentence[int(index)-1][HEAD].split(',')[0]
     if index == '0':
         return ('root', 'root')
     else:
-        return (sentence[int(index)-1][POS],
-                sentence[int(sentence[int(index)-1][HEAD])-1][POS])
+        first_order_pos = sentence[int(index)-1][POS]
+        second_order_pos = sentence[int(sentence[int(index)-1][HEAD].split(',')[0])-1][POS]
+        return (first_order_pos, second_order_pos)
 
 def token_distance(index, token_cues):
         rtd = '_'
