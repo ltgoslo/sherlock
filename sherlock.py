@@ -26,7 +26,7 @@ def wapiti(wapiti, pattern_or_model, data, mode):
         print('Wapiti complains:')
         print(stderr, file=sys.stderr)
         sys.exit(1)
-    return output 
+    return output
 
 def transform(dataset, mode, pos, lemma):
     bn = dataset.split('/')[-1]
@@ -52,7 +52,7 @@ def transform(dataset, mode, pos, lemma):
                 s.write('\t'.join(token) + '\t' + label + '\n')
                 e.write('\t'.join(token) + '\t' + label + '\n')
         s.write('\n')
-        e.write('\n')        
+        e.write('\n')
     s.close()
     e.close()
     return scope, event, converted_epe

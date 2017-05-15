@@ -8,8 +8,8 @@ def flatten_scopes(gold_semplus_data):
     flattened = []
     sentence = []
     n = False
-    for line in [line.split() for line in open(gold_semplus_data)]:
-        if line == []:
+    for line in [line.strip().split('\t') for line in open(gold_semplus_data)]:
+        if line == ['']:
             flattened.append(sentence)
             sentence = []
             n = False

@@ -2,24 +2,37 @@ import sys
 import json
 import codecs
 
+def make_lemma(node, lemma):
+    if lemma == 'form':
+        return node['form']
+    if 'properties' in node:
+        if lemma in node['properties'] and node['properties'][lemma] == u'\x0c':
+            node['properties'][lemma] = u'formfeed'
+        return node['properties'][lemma] if lemma in node['properties'] else '_'
+    else:
+        return '_'
+
+def make_pos(node, pos):
+    if 'properties' in node:
+        return node['properties'][pos]
+    else:
+        return '_'
+
 def make_tokens(epe_sentence, pos, lemma):
     tokens = {}
     for node in epe_sentence['nodes']:
-        # hungarian hack
-        if 'properties' in node:
-            # for now, call the formfeed character "formfeed"
-            # currently there's a lot of .strip()s down in the
-            # pipeline so we need some actual characters
-            if node['form'] == u'\x0c':
-                node['form'] = u'formfeed'
-                node['properties'][lemma] = u'formfeed'
-            tokens[node['id']] = {'id'      : node['id'],
-                                  'form'    : node['form'],
-                                  'lemma'   : node['properties'][lemma] if lemma in node['properties'] else '_',
-                                  'pos'     : node['properties'][pos],
-                                  'heads'   : [],
-                                  'deprels' : [],
-                                  'negation': []}
+        # for now, call the formfeed character "formfeed"
+        # currently there's a lot of .strip()s down in the
+        # pipeline so we need some actual characters
+        if node['form'] == u'\x0c':
+            node['form'] = u'formfeed'
+        tokens[node['id']] = {'id'      : node['id'],
+                              'form'    : node['form'],
+                              'lemma'   : make_lemma(node, lemma),
+                              'pos'     : make_pos(node, pos),
+                              'heads'   : [],
+                              'deprels' : [],
+                              'negation': []}
     return tokens
 
 def parse_and_dump(infile, outfile, pos, lemma, mode):
@@ -34,17 +47,16 @@ def parse_and_dump(infile, outfile, pos, lemma, mode):
         cues = []
         for node in epe_sentence['nodes']:
             # hungarian hack
-            if 'properties' in node:
-                if 'negation' in node:
-                    for negation in node['negation']:
-                        if 'cue' in negation:
-                            if negation['id'] not in cues:
-                                cues.append(negation['id'])
-                    tokens[node['id']]['negation'] = node['negation']
-                if 'edges' in node:
-                    for edge in node['edges']:
-                        tokens[edge['target']]['heads'].append(str(node['id']))
-                        tokens[edge['target']]['deprels'].append(edge['label'])
+            if 'negation' in node:
+                for negation in node['negation']:
+                    if 'cue' in negation:
+                        if negation['id'] not in cues:
+                            cues.append(negation['id'])
+                tokens[node['id']]['negation'] = node['negation']
+            if 'edges' in node:
+                for edge in node['edges']:
+                    tokens[edge['target']]['heads'].append(str(node['id']))
+                    tokens[edge['target']]['deprels'].append(edge['label'])
         for i in sorted(tokens):
             if cues:
                 sem_neg = ['_' for x in range(len(cues)*3)]
@@ -60,11 +72,11 @@ def parse_and_dump(infile, outfile, pos, lemma, mode):
             s = u"{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n"
             out.write(s.format('_',
                                epe_sentence['id'],
-                               i, 
+                               i,
                                tokens[i]['form'],
                                tokens[i]['lemma'],
                                tokens[i]['pos'],
-                               ','.join(tokens[i]['heads']) if tokens[i]['heads'] else '0', 
+                               ','.join(tokens[i]['heads']) if tokens[i]['heads'] else '0',
                                ','.join(tokens[i]['deprels']) if tokens[i]['deprels'] else 'root',
                                '_',
                                '\t'.join(sem_neg)))
@@ -72,7 +84,7 @@ def parse_and_dump(infile, outfile, pos, lemma, mode):
                 s = u"{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n"
                 eval_out.write(s.format('_',
                                         epe_sentence['id'],
-                                        i, 
+                                        i,
                                         tokens[i]['form'],
                                         tokens[i]['lemma'],
                                         tokens[i]['pos'],

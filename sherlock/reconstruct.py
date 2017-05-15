@@ -13,7 +13,7 @@ def find_overlaps(sentence, cue_indices):
     for i, ci in enumerate(cue_indices):
         ci = int(ci)
         for j in range(ci, ci-1+OVERLAP_THRESHOLD):
-            if j == len(sentence)-1:
+            if j >= len(sentence)-1:
                 break
             if sentence[j][INDEX] in cue_indices:
                 stop = stop_between(sentence, ci-1, 
