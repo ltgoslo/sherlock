@@ -13,7 +13,7 @@ def make_lemma(node, lemma):
         return '_'
 
 def make_pos(node, pos):
-    if 'properties' in node:
+    if 'properties' in node and pos in node['properties']:
         return node['properties'][pos]
     else:
         return '_'
@@ -24,10 +24,10 @@ def make_tokens(epe_sentence, pos, lemma):
         # for now, call the formfeed character "formfeed"
         # currently there's a lot of .strip()s down in the
         # pipeline so we need some actual characters
-        if node['form'] == u'\x0c':
+        if 'form' in node and node['form'] == u'\x0c':
             node['form'] = u'formfeed'
         tokens[node['id']] = {'id'      : node['id'],
-                              'form'    : node['form'],
+                              'form'    : node['form'] if 'form' in node else '_',
                               'lemma'   : make_lemma(node, lemma),
                               'pos'     : make_pos(node, pos),
                               'heads'   : [],
@@ -35,6 +35,7 @@ def make_tokens(epe_sentence, pos, lemma):
                               'negation': []}
     return tokens
 
+# TODO: exception on duplicate ids
 def parse_and_dump(infile, outfile, pos, lemma, mode):
     out = codecs.open(outfile, 'w', 'utf8')
     if mode == 'test':
