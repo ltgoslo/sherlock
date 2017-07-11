@@ -99,10 +99,13 @@ def dep_features(token, graph, target, edge_names):
                        token[INDEX] + '_' + token[TOKEN],
                        target[INDEX] + '_' + target[TOKEN])
     path = []
-    for i, node in enumerate(sp):
-        if i+1 < len(sp):
-            path.append(edge_names[node+sp[i+1]])
-    return (str(len(sp)), ''.join(path))
+    if sp == -1:
+        return ('-1', '-1')
+    else:
+        for i, node in enumerate(sp):
+            if i+1 < len(sp):
+                path.append(edge_names[node+sp[i+1]])
+        return (str(len(sp)), ''.join(path))
 
 if __name__ == '__main__':
     print("I am a module.")
