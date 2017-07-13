@@ -60,7 +60,9 @@ scue_regex = re.compile(scue_regex)
 At post-processing time, a (series of) character(s) from the punctuation
 list is used to break scopes (or, the assignment of in-scope tokens to a
 given cue), and punctuation marks labeled 'N' by the crf are discarded
-from the scopes during post-processing.
+from the scopes during post-processing. If your tokenizer normalizes
+punctuation marks to more exotic characters/tokens, you might want to
+add them to this string.
 
 """
 punctuation = '!"#$%&()*+,\'--./:;<=>?@[\\]^_`{|}~’'
