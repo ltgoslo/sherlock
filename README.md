@@ -48,7 +48,7 @@ A minimal invocation of Sherlock:
 python sherlock.py --training trainingset.epe+ --testing testset.epe+ --wapiti ~/path/to/wapiti --pattern_scope ~/patterns/scope.pattern --pattern_event ~/patterns/event.pattern --output output.*sem --cleanup --pos pos --lemma lemma
 ```
 
-When run with the `--cleanup` flag Sherlock will produce two files, `gold_testset_test.*sem` (the *sem version of the test set, with gold negation annotations) and `output.*sem` (the system output).
+When run with the `--cleanup` flag, Sherlock will produce two files: `gold_testset_test.*sem` (the *sem version of the test set, with gold negation annotations) and `output.*sem` (the system output).
 
 To evaluate, invoke the 2012 *sem shared task evaluation script:
 
