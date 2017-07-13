@@ -14,7 +14,10 @@ def make_lemma(node, lemma):
 
 def make_pos(node, pos):
     if 'properties' in node and pos in node['properties']:
-        return node['properties'][pos]
+        if node['properties'][pos] == '':
+            return '_'
+        else:
+            return node['properties'][pos]
     else:
         return '_'
 
