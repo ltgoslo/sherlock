@@ -58,7 +58,7 @@ perl evaluation/eval.cd-sco.pl -g gold_testset_test.*sem -s output.*sem
 
 ## Data
 
-This version of Sherlock accepts `.epe+`-formatted files as input. For more information, please see [http://epe.nlpl.eu/](http://epe.nlpl.eu/)
+This version of Sherlock accepts `.epe+`-formatted files as input. For more information, please see [http://epe.nlpl.eu/](http://epe.nlpl.eu/).
 
 ## Tweaking the system
 
