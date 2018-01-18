@@ -1,4 +1,5 @@
 import sys
+import os
 import json
 import codecs
 
@@ -41,8 +42,9 @@ def make_tokens(epe_sentence, pos, lemma):
 # TODO: exception on duplicate ids
 def parse_and_dump(infile, outfile, pos, lemma, mode):
     out = codecs.open(outfile, 'w', 'utf8')
+    evaluation = os.path.dirname(outfile) + "/gold.*sem"
     if mode == 'test':
-        eval_out = codecs.open('gold_' + outfile.split('.')[0] + '.*sem', 'w', 'utf8')
+        gold = codecs.open(evaluation, 'w', 'utf8')
     for line in open(infile):
         # strict=False here is apparently necessary to allow characters
         # that are not properly escaped according to some JSON specs.
@@ -86,7 +88,7 @@ def parse_and_dump(infile, outfile, pos, lemma, mode):
                                '\t'.join(sem_neg)))
             if mode == 'test':
                 s = u"{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n"
-                eval_out.write(s.format('_',
+                gold.write(s.format('_',
                                         epe_sentence['id'],
                                         i,
                                         tokens[i]['form'],
@@ -95,8 +97,10 @@ def parse_and_dump(infile, outfile, pos, lemma, mode):
                                         '_',
                                         '\t'.join(sem_neg)))
         if mode == 'test':
-            eval_out.write('\n')
+            gold.write('\n')
         out.write('\n')
+
+    return evaluation
 
 if __name__ == '__main__':
     print('Module only, for now')

@@ -73,10 +73,10 @@ with the different algorithms and regularization strategies available
 with wapiti, simply edit the cmd variable to be the desired command. See
 https://wapiti.limsi.fr/manual.html
 """
-def wapiti_train_command(wapiti, pattern_or_model, data, output):
-    cmd = '{} train -p {} {} {}'.format(wapiti, pattern_or_model, data, output)
+def wapiti_train_command(wapiti, pattern_or_model, data, output, parameters):
+    cmd = '{} train {} -p {} {} {}'.format(wapiti, parameters, pattern_or_model, data, output)
     return cmd.split()
 
-def wapiti_test_command(wapiti, pattern_or_model, data, output):
-    cmd = '{} label -m {} -c {} {}'.format(wapiti, pattern_or_model, data, output)
+def wapiti_test_command(wapiti, pattern_or_model, data, output, parameters):
+    cmd = '{} label {} -m {} -c {} {}'.format(wapiti, parameters, pattern_or_model, data, output)
     return cmd.split()

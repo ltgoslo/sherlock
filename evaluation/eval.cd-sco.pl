@@ -1,4 +1,4 @@
-#!/usr/bin/env perl
+#!/usr/bin/perl
 
 # Author: Roser Morante
 # Institution: CLiPS - University of Antwerp
