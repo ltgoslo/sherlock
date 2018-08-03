@@ -74,9 +74,13 @@ with wapiti, simply edit the cmd variable to be the desired command. See
 https://wapiti.limsi.fr/manual.html
 """
 def wapiti_train_command(wapiti, pattern_or_model, data, output, parameters):
+    if parameters == "default":
+        parameters = ""
     cmd = '{} train {} -p {} {} {}'.format(wapiti, parameters, pattern_or_model, data, output)
     return cmd.split()
 
 def wapiti_test_command(wapiti, pattern_or_model, data, output, parameters):
+    if parameters == "default":
+        parameters = ""
     cmd = '{} label {} -m {} -c {} {}'.format(wapiti, parameters, pattern_or_model, data, output)
     return cmd.split()
