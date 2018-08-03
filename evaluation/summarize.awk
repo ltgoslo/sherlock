@@ -1,5 +1,6 @@
 BEGIN {
-  FS=" \\| ";
+  FS = " \\| ";
+  file = ARGV[1];
 }
 
 /^Scopes\(cue match\):/ {
@@ -21,5 +22,5 @@ BEGIN {
 }
 
 END {
-  printf("%s\t%s\t\t%s\t%s\t\t%s\t%s\t\t%s\t%s\n", sp, sr, tp, tr, ep, er, np, nr);
+  printf("%s\t%s\t%s\t\t%s\t%s\t\t%s\t%s\t\t%s\t%s\n", file, sp, sr, tp, tr, ep, er, np, nr);
 }
