@@ -83,7 +83,7 @@ if __name__ == '__main__':
     argparser.add_argument('--scope_parameters', help="additional command-line parameters to Wapiti for scope model", required=False)
     argparser.add_argument('--event_parameters', help="additional command-line parameters to Wapiti for event model", required=False)
     argparser.add_argument('--decode_parameters', help="additional command-line parameters to Wapiti for decoding", required=False)
-    argparser.add_argument('--score', help="invoke the officia *SEM 2010 scorer on the system output", nargs="?", const=True, required=False)
+    argparser.add_argument('--score', help="invoke the official *SEM 2010 scorer on the system output", nargs="?", const=True, required=False)
     argparser.add_argument('--target', help="target directory for output files, e.g. models and converted data", required=False)
     argparser.add_argument('--force', help="empty out and remove output directory, if necessary", nargs="?", const=True, required=False)
     argparser.add_argument('--cleanup', help="if enabled, sherlock will remove all intermediate files", action="store_true")
@@ -173,3 +173,5 @@ if __name__ == '__main__':
         os.remove(converted_training)
         os.remove(converted_testing)
     print("Done!")
+    sys.exit(0)
+    
