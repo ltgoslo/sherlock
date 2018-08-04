@@ -31,6 +31,22 @@ def parse_wap(scope, event, original):
               for t in s.split('\n')]
               for s in f.split('\n\n')]
         retval.append(f)
+
+    #
+    # actually force gold-standard cue information onto the system predictions
+    # (so that we should always expect perfect cue matches).
+    #
+    for ssentence, esentence, osentence \
+    in zip(retval[0], retval[1], retval[2]):
+        for stoken, etoken, otoken in zip(ssentence, esentence, osentence):
+            form = otoken[TOKEN]
+            negation = otoken[NEGATION:]
+            for i in range(0, len(negation), 3):
+                if negation[i] == form:
+                    stoken[-1] = etoken[-1] = CUE
+                elif negation[i] in form:
+                    stoken[-1] = etoken[-1] = SUBSTR_CUE
+
     return retval
 
 def is_surrounded(i, sentence):
@@ -89,37 +105,76 @@ def find_cues(sentence):
     return cue_indices    
 
 def contains_mwc(system_sentence, original_sentence):
+    if len(system_sentence) == NEGATION + 1 or system_sentence[0][NEGATION] == "***":
+        return False
     for i, (system_token, original_token) in enumerate(zip(system_sentence,
                                                            original_sentence)):
-        if len(system_token[NEGATION:]) != len(original_token[NEGATION:]):
+        if len(system_token[NEGATION:]) > len(original_token[NEGATION:]):
             return True
     return False
 
 def multi_word_cue_recovery(system_sentence, original_sentence):    
-    fixed = []
     system_cues = find_cues(system_sentence)
     original_cues = find_cues(original_sentence)
-    for i, (system_token, original_token) in enumerate(zip(system_sentence,
-                                                           original_sentence)):
-        fixed_token = original_sentence[i][NEGATION:]
-        for j, (system_neg, original_neg) in enumerate(zip(system_token[NEGATION:],
-                                                           original_token[NEGATION:])):
-            if system_neg != '_' and j % 3 != 0:
-                new_index = original_cues[int(j/3)][2]
-                if system_neg == original_cues[int(j/3)][0]:
-                    fixed_token[new_index + (j % 3)] = '_'
-                else:
-                    fixed_token[new_index + (j % 3)] = system_neg
-        for j, annotation in enumerate(fixed_token):
-            if j % 3 == 0:
-                if annotation == fixed_token[j+1]:
-                    fixed_token[j+1] = '_'
-                if annotation == fixed_token[j+2]:
-                    fixed_token[j+2] = '_'
-        foo = original_token[:NEGATION]
-        foo.extend(fixed_token)
-        fixed.append(foo)
-    return fixed
+
+    print "system:\n%s\n%s\n\n" % (system_sentence, system_cues)
+    print "original:\n%s\n%s\n\n" % (original_sentence, original_cues)
+
+    bogus = []
+    for scue, ocue in zip(system_cues, original_cues):
+        #
+        # pairs of tokens that form a multi-word cue will be characterize
+        # by a mismatch between the cue index (into the sequence of triples
+        # that represent negation instances) in the system output vs. the
+        # gold standard.  information from such 'satellite' instances needs
+        # to be (sort of) unified with the information on the main instance,
+        # i.e. the first token that is part of the cue.  however, cue indices
+        # (as initially extracted by find_cues() above) need to be adjusted
+        # underway, as each satellite instance that has been processed will
+        # conceptually shift following indices to the left (by one triple).
+        # for example, for SSD/10430, the original system output stipulates
+        # four cues (<by>, <no>, <means>, and <im>), at indices 0, 3, 6, and
+        # 9.  the first three collapse into one negation instance, at index 0;
+        # thus, the cue originally at index 9 will at that point correspond
+        # to the gold-standard cue at index 3 and needs no adjustment.
+        #
+        i = scue[2]
+        j = ocue[2]
+        if i - len(bogus) * 3 != j:
+#            print "copying from %s to %s:" % (i, j)
+            for stoken, otoken in zip(system_sentence, original_sentence):
+                if stoken[NEGATION + i] != "_":
+                    stoken[NEGATION + j] = stoken[NEGATION + i]
+                #
+                # if the current token (now) is a cue, it cannot be in its
+                # own scope; otherwise, copy in from the satellite token
+                #
+                if stoken[NEGATION + j] != "_":
+                    stoken[NEGATION + j + 1] = "_"
+                elif stoken[NEGATION + i + 1] != "_":
+                    stoken[NEGATION + j + 1] = stoken[NEGATION + i + 1]
+                #
+                # and similarly for the events field ...
+                #
+                if stoken[NEGATION + j] != "_":
+                    stoken[NEGATION + j + 2] = "_"
+                elif stoken[NEGATION + i + 2] != "_":
+                    stoken[NEGATION + j + 2] = stoken[NEGATION + i + 2]
+            bogus.insert(0, i)
+
+    #
+    # finally, actually remove the sub-triples of sattelite instances
+    #
+    for j in bogus:
+        for stoken in system_sentence:
+#            print "deleting from %s to %s:" % (j, j+3)
+#            print stoken
+            del stoken[NEGATION + j:NEGATION + j + 3]
+#            print stoken
+
+#    print "new system:\n%s\n%s\n\n" % (system_sentence, find_cues(system_sentence))
+                
+    return system_sentence
 
 def clean_cue(cue):
     while not cue[0].isalpha():
