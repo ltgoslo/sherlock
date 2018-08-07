@@ -149,6 +149,10 @@ def multi_word_cue_recovery(system_sentence, original_sentence):
                 # if the current token (now) is a cue, it cannot be in its
                 # own scope; otherwise, copy in from the satellite token
                 #
+                # _fix_me_
+                # upon further reflection, probably this test should be more
+                # strict, viz. guard against infix cues.           (7-aug-18)
+                #
                 if stoken[NEGATION + j] != "_":
                     stoken[NEGATION + j + 1] = "_"
                 elif stoken[NEGATION + i + 1] != "_":
