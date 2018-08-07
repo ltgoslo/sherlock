@@ -117,8 +117,8 @@ def multi_word_cue_recovery(system_sentence, original_sentence):
     system_cues = find_cues(system_sentence)
     original_cues = find_cues(original_sentence)
 
-    print "system:\n%s\n%s\n\n" % (system_sentence, system_cues)
-    print "original:\n%s\n%s\n\n" % (original_sentence, original_cues)
+#    print "system:\n%s\n%s\n\n" % (system_sentence, system_cues)
+#    print "original:\n%s\n%s\n\n" % (original_sentence, original_cues)
 
     bogus = []
     for scue, ocue in zip(system_cues, original_cues):
@@ -141,7 +141,6 @@ def multi_word_cue_recovery(system_sentence, original_sentence):
         i = scue[2]
         j = ocue[2]
         if i - len(bogus) * 3 != j:
-#            print "copying from %s to %s:" % (i, j)
             for stoken, otoken in zip(system_sentence, original_sentence):
                 if stoken[NEGATION + i] != "_":
                     stoken[NEGATION + j] = stoken[NEGATION + i]
@@ -171,10 +170,7 @@ def multi_word_cue_recovery(system_sentence, original_sentence):
     #
     for j in bogus:
         for stoken in system_sentence:
-#            print "deleting from %s to %s:" % (j, j+3)
-#            print stoken
             del stoken[NEGATION + j:NEGATION + j + 3]
-#            print stoken
 
 #    print "new system:\n%s\n%s\n\n" % (system_sentence, find_cues(system_sentence))
                 
