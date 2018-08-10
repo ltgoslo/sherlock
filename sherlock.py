@@ -8,6 +8,8 @@ import subprocess
 from argparse import ArgumentParser
 import re
 import string
+import json
+import codecs
 from sherlock.config import *
 from sherlock.flatten import flatten_scopes
 from sherlock.features import *
@@ -64,10 +66,10 @@ def transform(dataset, mode, pos, lemma, tmp):
 
 if __name__ == '__main__':
     argparser = ArgumentParser(description="Negation scope resolution.")
-    argparser.add_argument('--pos', help="specify the epe node property to use as pos. Defaults to 'pos'",
+    argparser.add_argument('--pos', help="specify the EPE node property to use as PoS. Defaults to 'pos'",
                            required=False,
                            default='pos')
-    argparser.add_argument('--lemma', help="specify the epe node property to use as pos. Defaults to 'lemma'",
+    argparser.add_argument('--lemma', help="specify the EPE node property to use as PoS. Defaults to 'lemma'",
                            required=False,
                            default='lemma')
     argparser.add_argument('--training', help="path to training data", required=False)
@@ -88,7 +90,7 @@ if __name__ == '__main__':
     argparser.add_argument('--force', help="empty out and remove output directory, if necessary", nargs="?", const=True, required=False)
     argparser.add_argument('--cleanup', help="if enabled, sherlock will remove all intermediate files", action="store_true")
     args = argparser.parse_args()
-
+    
     scope_parameters = args.scope_parameters if args.scope_parameters else "-T crf -a l-bfgs -1 0.5 -2 0.5 -e 0.001"
     event_parameters = args.event_parameters if args.event_parameters else "-T crf -a l-bfgs -1 0.5 -2 1 -e 0.01"
     decode_parameters = args.decode_parameters.lstrip().rstrip() if args.decode_parameters else "-p"
@@ -113,6 +115,16 @@ if __name__ == '__main__':
     sys.stdout = sys.stderr = log
 
     if args.training:
+        defaults = os.path.dirname(args.training) + "/Sherlock"
+        if os.path.exists(defaults):
+            print("Reading defaults from {}.".format(defaults))
+            with codecs.open(defaults, "r", "utf8") as stream:
+                settings = json.load(stream)
+                if settings["scope_parameters"]:
+                    scope_parameters = settings["scope_parameters"]
+                if settings["event_parameters"]:
+                    event_parameters = settings["event_parameters"]
+
         print("Transforming {}...".format(args.training))
         training_scope, training_event, converted_training, _ = transform(args.training, 'train', args.pos, args.lemma, tmp)
         print("Training scope model...")
