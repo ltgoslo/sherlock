@@ -84,6 +84,7 @@ if __name__ == '__main__':
     argparser.add_argument('--wapiti', help="path to a Wapiti executable, assumed to be in cwd if absent", required=True)
     argparser.add_argument('--scope_parameters', help="additional command-line parameters to Wapiti for scope model", required=False)
     argparser.add_argument('--event_parameters', help="additional command-line parameters to Wapiti for event model", required=False)
+    argparser.add_argument('--parameters', help="read additional parameters from JSON file", required=False)
     argparser.add_argument('--decode_parameters', help="additional command-line parameters to Wapiti for decoding", required=False)
     argparser.add_argument('--score', help="invoke the official *SEM 2010 scorer on the system output", nargs="?", const=True, required=False)
     argparser.add_argument('--target', help="target directory for output files, e.g. models and converted data", required=False)
@@ -115,10 +116,9 @@ if __name__ == '__main__':
     sys.stdout = sys.stderr = log
 
     if args.training:
-        defaults = os.path.dirname(args.training) + "/Sherlock"
-        if os.path.exists(defaults):
-            print("Reading defaults from {}.".format(defaults))
-            with codecs.open(defaults, "r", "utf8") as stream:
+        if args.parameters and os.path.exists(args.parameters):
+            print("Reading parameters from {}.".format(args.parameters))
+            with codecs.open(args.parameters, "r", "utf8") as stream:
                 settings = json.load(stream)
                 if settings["scope_parameters"]:
                     scope_parameters = settings["scope_parameters"]
